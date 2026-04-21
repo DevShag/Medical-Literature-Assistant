@@ -4,12 +4,16 @@ from typing import List, Dict
 from qdrant_client import QdrantClient           # Vector DB client
 from qdrant_client.http import models            # Qdrant data structures
 from openai import OpenAI                        # OpenAI API client
-from config import settings                      # Your config (API keys, paths)
+from backend.config import settings                      # Your config (API keys, paths)
 
 
 class IngestionPipeline:
     def __init__(self):
-        self.client = QdrantClient(path=settings.QDRANT_PATH)
+        #self.client = QdrantClient(path=settings.QDRANT_PATH)
+        self.client = QdrantClient(
+            host= settings.QDRANT_HOST,
+            port= settings.QDRANT_PORT
+        )
         self.openai_client = OpenAI(api_key=settings.OPENAI_API_KEY)
         self._ensure_collection()
 
@@ -34,10 +38,10 @@ class IngestionPipeline:
             text += page.get_text()
         return text
     
-    def chunk_text(sefl, text: str, chun_size: int = settings.CHUNK_SIZE, overlap: int = settings.CHUNK_OVERLAP) -> List[str]:
+    def chunk_text(sefl, text: str, chunk_size: int = settings.CHUNK_SIZE, overlap: int = settings.CHUNK_OVERLAP) -> List[str]:
         chunks = []
-        for i in range(0, len(text), chun_size - overlap):
-            chunks.append(text[i:i + chun_size])
+        for i in range(0, len(text), chunk_size - overlap):
+            chunks.append(text[i:i + chunk_size])
         return chunks
     
 
@@ -90,7 +94,7 @@ class IngestionPipeline:
                 vector= embedding,
                 # This is extra information stored with the vector
                 payload={
-                    'text': chunks,
+                    'text': chunk,
                     'source': filename,
                     'page_chunk': i
                 }

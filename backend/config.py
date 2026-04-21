@@ -14,7 +14,9 @@ class Settings(BaseSettings):
 
 
     # Qdrant config
-    QDRANT_PATH: str = os.getenv("QDRANT_PATH", "qdrant_db")
+    #QDRANT_PATH: str = os.getenv("QDRANT_PATH", "qdrant_db")
+    #QDRANT_HOST = "localhost"
+    #QDRANT_PORT = 6333
     QDRANT_HOST: str = 'localhost'
     QDRANT_PORT: int = 6333
     QDRANT_COLLECTION_NAME: str = 'medical_literature'
